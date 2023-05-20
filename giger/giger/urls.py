@@ -16,8 +16,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.conf.urls.static import static
+
+from giger import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('shop.urls')),
 ]
+
+handler404 = "shop.views.error404Page"
+handler400 = "shop.views.error404Page"
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

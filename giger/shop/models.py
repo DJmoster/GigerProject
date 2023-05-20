@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Products(models.Model):
@@ -23,6 +24,9 @@ class Products(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('product', kwargs={'product_slug': self.url_slug})
     
     class Meta:
         verbose_name = 'Товар'
@@ -75,6 +79,7 @@ class ProductReviews(models.Model):
     email       = models.EmailField(max_length=255)
     description = models.TextField()
     rate        = models.IntegerField()
+    creation_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.name
