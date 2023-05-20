@@ -21,6 +21,13 @@ class Products(models.Model):
     url_slug      = models.SlugField(max_length=255, db_index=True, unique=True)
     creation_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товари'
+
 class Categories(models.Model):
     '''Таблиця категорій та підкатегорій'''
     parent_id  = models.ForeignKey('Categories', null=True, blank=True, on_delete=models.PROTECT)
@@ -31,9 +38,23 @@ class Categories(models.Model):
     url_slug  = models.SlugField(max_length=255, db_index=True, unique=True)
     is_active = models.BooleanField(default=True)
 
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Категорія'
+        verbose_name_plural = 'Категорії'
+
 class Vendors(models.Model):
     '''Таблиця наявних вендорів'''
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Вендор'
+        verbose_name_plural = 'Вендори'
 
 class ProductImages(models.Model):
     '''Таблиця зображень товару'''
@@ -55,12 +76,22 @@ class ProductReviews(models.Model):
     description = models.TextField()
     rate        = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+
 class Customers(models.Model):
     '''Таблиця клієнтів що робили замовлення'''
     name    = models.CharField(max_length=255)
     surname = models.CharField(max_length=255)
     address = models.CharField(max_length=255)
     phone   = models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Клієнт'
+        verbose_name_plural = 'Клієнти'
 
 
 class Orders(models.Model):
@@ -82,6 +113,13 @@ class Orders(models.Model):
 
     date_created = models.DateTimeField(auto_now=True, editable=False)
 
+    def __str__(self):
+        return self.customer_id.name + ' ' + self.customer_id.surname
+    
+    class Meta:
+        verbose_name = 'Замовлення'
+        verbose_name_plural = 'Замовлення'
+
 class OrderItems(models.Model):
     '''Таблиця товарів які людина замовила'''
     product_id = models.ForeignKey('Products', blank=True, null=True, on_delete=models.SET_NULL)
@@ -91,6 +129,13 @@ class OrderItems(models.Model):
     buying_price = models.FloatField()
     count        = models.IntegerField()
 
+    def __str__(self):
+        return self.name
+    
+    class Meta:
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товари'
+
 class ItemWarranty(models.Model):
     '''Таблиця наявних гарантій на товари'''
     order_item_id = models.ForeignKey('OrderItems', on_delete=models.CASCADE)
@@ -98,3 +143,6 @@ class ItemWarranty(models.Model):
 
     start_date = models.DateField(auto_now_add=True)
     end_date = models.DateField()
+
+    def __str__(self):
+        return self.serial_number

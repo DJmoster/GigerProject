@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'admin_reorder',
     'shop',
 ]
 
@@ -48,6 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
 
 ROOT_URLCONF = 'giger.urls'
@@ -122,3 +124,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+ADMIN_REORDER = (
+    {
+        'app': 'shop',
+        'label': 'Керування товарами',
+        'models': ('shop.Products', 'shop.Categories', 'shop.Vendors'),
+    },
+    {
+        'app': 'shop',
+        'label': 'Керування замовленями',
+        'models': ('shop.Orders', 'shop.Customers'),
+    },
+)
