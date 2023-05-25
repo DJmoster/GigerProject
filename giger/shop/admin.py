@@ -8,6 +8,19 @@ class ProductSalesInline(admin.TabularInline):
     model = ProductSales
     extra = 1
 
+class ProductReviewsInline(admin.TabularInline):
+    model  = ProductReviews
+    extra  = 5
+    fields = ('name', 'email', 'rate', 'description', 'creation_date')
+    readonly_fields = ('name', 'email', 'rate', 'description', 'creation_date')
+
+class ProductReviewsAdmin(admin.ModelAdmin):
+    search_fields = ('name', 'email', 'description')
+
+    list_display = ('name', 'email', 'rate', 'description', 'creation_date')
+    list_display_links = ('name',)
+    list_filter = ('creation_date', 'rate')
+
 class ProductsAdmin(admin.ModelAdmin):
     search_fields = ('name', 'sku', 'price')
 
@@ -16,7 +29,7 @@ class ProductsAdmin(admin.ModelAdmin):
     list_editable = ('sku', 'availability', 'price', 'is_active')
     list_filter = ('availability', 'price', 'is_active')
 
-    inlines = [ProductImagesInline, ProductSalesInline]
+    inlines = [ProductImagesInline, ProductSalesInline, ProductReviewsInline]
     prepopulated_fields = {'url_slug': ('name',)}
 
 class CategoriesAdmin(admin.ModelAdmin):
@@ -33,6 +46,7 @@ class CategoriesAdmin(admin.ModelAdmin):
 admin.site.register(Products, ProductsAdmin)
 admin.site.register(Categories, CategoriesAdmin)
 admin.site.register(Vendors)
+admin.site.register(ProductReviews, ProductReviewsAdmin)
 
 # class ItemWarrantyInline(admin.TabularInline):
 #     model = ItemWarranty

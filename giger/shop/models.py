@@ -79,10 +79,14 @@ class ProductReviews(models.Model):
     email       = models.EmailField(max_length=255)
     description = models.TextField()
     rate        = models.IntegerField()
-    creation_date = models.DateField(auto_now_add=True)
+    creation_date = models.DateField(auto_now_add=True, editable=False)
 
     def __str__(self):
         return self.name
+    
+    class Meta:
+        verbose_name = 'Відгук'
+        verbose_name_plural = 'Відгуки'
 
 class Customers(models.Model):
     '''Таблиця клієнтів що робили замовлення'''
