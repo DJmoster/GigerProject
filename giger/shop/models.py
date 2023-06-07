@@ -28,6 +28,57 @@ class Products(models.Model):
     def get_absolute_url(self):
         return reverse('product', kwargs={'product_slug': self.url_slug})
     
+    @property
+    def get_price(self):
+        return f'{round(self.price, 10)}'.replace('.', ',') + ' грн.'
+    
+    @property
+    def get_product_image(self):
+        return ProductImages.objects.filter(product_id=self.pk).first()
+    
+    @property
+    def get_reviews_avg(self):
+        reviews       = ProductReviews.objects.filter(product_id=self.pk)
+        reviews_sum   = len(reviews)
+        reviews_count = []
+        reviews_avg   = 0
+
+        if reviews_sum != 0:
+            for i in range(1,6):
+                reviews_count.append(len(reviews.filter(rate=i)))
+
+            reviews_count.reverse()
+
+            reviews_avg = round((reviews_count[0] * 5 + 
+                        reviews_count[1] * 4 + 
+                        reviews_count[2] * 3 + 
+                        reviews_count[3] * 2 + 
+                        reviews_count[4] * 1) / reviews_sum, 1)
+            
+            return reviews_avg
+        return None
+    
+    @property
+    def get_reviews_count(self):
+        reviews = ProductReviews.objects.filter(product_id=self.pk)
+
+        return len(reviews)
+    
+    @property
+    def get_reviews_division(self):
+        reviews       = ProductReviews.objects.filter(product_id=self.pk)
+        reviews_sum   = len(reviews)
+        reviews_count = []
+
+        if reviews_sum != 0:
+            for i in range(1,6):
+                reviews_count.append(len(reviews.filter(rate=i)))
+
+            reviews_count.reverse()
+            return reviews_count
+        return None
+
+    
     class Meta:
         verbose_name = 'Товар'
         verbose_name_plural = 'Товари'
@@ -44,6 +95,9 @@ class Categories(models.Model):
 
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('category', kwargs={'category_slug': self.url_slug})
     
     class Meta:
         verbose_name = 'Категорія'

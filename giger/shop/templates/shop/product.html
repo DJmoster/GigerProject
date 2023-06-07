@@ -11,7 +11,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
                         <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="{% url 'home' %}">Home</a></li>
-                        <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="../shop/shop.html">{{ product_object.category_id.name }}</a></li>
+                        <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="{{ product_object.category_id.get_absolute_url }}">{{ product_object.category_id.name }}</a></li>
                         <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page">{{ product_object.name }}</li>
                     </ol>
                 </nav>
@@ -53,18 +53,20 @@
                 </div>
                 <div class="col-md-6 col-lg-4 col-xl-4 mb-md-6 mb-lg-0">
                     <div class="mb-2">
-                        <a href="#" class="font-size-12 text-gray-5 mb-2 d-inline-block">{{ product_object.category_id.name }}</a>
+                        <a href="{{ product_object.category_id.get_absolute_url }}" class="font-size-12 text-gray-5 mb-2 d-inline-block">{{ product_object.category_id.name }}</a>
                         <h2 class="font-size-25 text-lh-1dot2">{{ product_object.name }}</h2>
                         <div class="mb-2">
-                            <a class="d-inline-flex align-items-center small font-size-15 text-lh-1" href="#">
+                            <a class="d-inline-flex align-items-center small font-size-15 text-lh-1">
                                 <div class="text-warning mr-2">
-                                    <small class="fas fa-star"></small>
-                                    <small class="fas fa-star"></small>
-                                    <small class="fas fa-star"></small>
-                                    <small class="fas fa-star"></small>
-                                    <small class="far fa-star text-muted"></small>
+                                    {% for i in '12345'|make_list %}
+                                        {% if product_object.get_reviews_avg > forloop.counter0 %}
+                                            <small class="fas fa-star"></small>
+                                        {% else %}
+                                            <small class="far fa-star text-muted"></small>
+                                        {% endif %}
+                                    {% endfor %}
                                 </div>
-                                <span class="text-secondary font-size-13">(3 customer reviews)</span>
+                                <span class="text-secondary font-size-13">({{ product_object.get_reviews_count }} відгуків користувачів)</span>
                             </a>
                         </div>
                         <div class="mb-2">
@@ -89,11 +91,11 @@
                                 {% elif product_object.availability == -1 %}
                                 <span class="text-yellow font-weight-bold">Під замовлення</span>
                                 {% else %}
-                                <span class="text-green font-weight-bold">{{product_object.availability}} шт.</span>
+                                <span class="text-green font-weight-bold">{{ product_object.availability }} шт.</span>
                                 {% endif %}
                             </div>
                             <div class="mb-3">
-                                <div class="font-size-36">{{product_object.price}} грн.</div>
+                                <div class="font-size-36">{{ product_object.get_price }}</div>
                             </div>
                             <div class="mb-3">
                                 <h6 class="font-size-14">Кількість</h6>
@@ -132,7 +134,7 @@
                                 <a href="#" class="btn btn-block btn-dark">Buy Now</a>
                             </div>
                             <div class="flex-content-center flex-wrap">
-                                <a href="#" class="text-gray-6 font-size-13 mr-2"><i class="ec ec-favorites mr-1 font-size-15"></i> Список бажаного</a>
+                                <a href="{% url 'wishlist' %}" data-id="{{product_object.pk}}" onclick=addToWishList(this.dataset.id) class="text-gray-6 font-size-13 mr-2"><i class="ec ec-favorites mr-1 font-size-15"></i> Додати в список бажаного</a>
                             </div>
                         </div>
                     </div>
@@ -169,14 +171,14 @@
                         <div class="row mb-8">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <h3 class="font-size-18 mb-6">Based on {{ product_reviews_sum }} reviews</h3>
-                                    <h2 class="font-size-30 font-weight-bold text-lh-1 mb-0">{{ product_reviews_avg }}</h2>
+                                    <h3 class="font-size-18 mb-6">Based on {{ product_object.get_reviews_count }} reviews</h3>
+                                    <h2 class="font-size-30 font-weight-bold text-lh-1 mb-0">{{ product_object.get_reviews_avg }}</h2>
                                     <div class="text-lh-1">overall</div>
                                 </div>
 
                                 <!-- Ratings -->
                                 <ul class="list-unstyled">
-                                    {% for count in product_reviews_count %}
+                                    {% for count in product_object.get_reviews_division %}
                                     <li class="py-1">
                                         <a class="row align-items-center mx-gutters-2 font-size-1" href="javascript:;">
                                             <div class="col-auto mb-2 mb-md-0">
