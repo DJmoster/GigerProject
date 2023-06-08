@@ -1,22 +1,34 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
 
-from shop.models import Products, ProductImages, ProductReviews, Categories
+import json
+
+from shop.forms import OrderForm, ReviewForm
+from shop.models import Products, ProductImages, ProductReviews, Categories, Customers, Orders, OrderItems
+
+APP_NAME = 'Giger'
 
 def error404Page(request, exception):
+    categories = Categories.objects.filter(is_active=True)
+
     context = {
-        'page_title': 'Giger | 404',
+        'page_title': f'{APP_NAME} | 404',
+        'page_categories': categories,
     }
     return render(request, 'shop/error.html', context=context)
 
 def homePage(request):
+    categories = Categories.objects.filter(is_active=True)
+
     context = {
-        'page_title': 'Giger | Home',
+        'page_title': f'{APP_NAME} | Home',
+        'page_categories': categories,
     }
     return render(request, 'shop/home.html', context=context)
 
 def productPage(request, product_slug):
+    categories = Categories.objects.filter(is_active=True)
     product = get_object_or_404(
         Products, 
         url_slug=product_slug, 
@@ -25,27 +37,33 @@ def productPage(request, product_slug):
     )
 
     if request.method == 'POST':
-        ProductReviews.objects.create(
-            product_id  = product,
-            name        = request.POST.get('name'),
-            email       = request.POST.get('email'),
-            description = request.POST.get('review'),
-            rate        = request.POST.get('stars'),
-        )
+        form = ReviewForm(request.POST)
+
+        if form.is_valid():
+            ProductReviews.objects.create(
+                product_id  = product,
+                name        = request.POST.get('name'),
+                email       = request.POST.get('email'),
+                description = request.POST.get('review'),
+                rate        = request.POST.get('stars'),
+            )
 
     images  = ProductImages.objects.filter(product_id=product.pk)
     reviews = ProductReviews.objects.filter(product_id=product.pk)
 
     context = {
-        'page_title': 'Giger | ' + product.name,
+        'page_title': f'{APP_NAME} | ' + product.name,
+        'page_categories': categories,
         'product_object': product,
         'product_images': images,
-        'product_reviews': reviews,
+        'product_reviews': reviews.order_by('-creation_date'),
+        'product_reviews_len': len(reviews),
     }
 
     return render(request, 'shop/product.html', context=context)
 
 def categoryPage(request, category_slug):
+    categories = Categories.objects.filter(is_active=True)
     category = get_object_or_404(
         Categories, 
         url_slug=category_slug, 
@@ -107,7 +125,8 @@ def categoryPage(request, category_slug):
 
 
     context = {
-        'page_title': f'Giger | {category.name}',
+        'page_title': f'{APP_NAME} | {category.name}',
+        'page_categories': categories,
         'category_object': category,
         'category_products': paginate.page(page),
         'category_products_count': len(products),
@@ -120,6 +139,7 @@ def categoryPage(request, category_slug):
     return render(request, 'shop/category.html', context=context)
 
 def searchPage(request):
+    categories = Categories.objects.filter(is_active=True)
     # Перевірка поля s 
     try:
         search_text = str(request.GET.get('s'))
@@ -154,7 +174,8 @@ def searchPage(request):
         return redirect('home')
 
     context = {
-        'page_title': f'Giger | Пошук',
+        'page_title': f'{APP_NAME} | Пошук',
+        'page_categories': categories,
         'search_text': search_text,
         'search_products': paginate.page(page),
         'search_products_count': len(products),
@@ -179,7 +200,7 @@ def getProductApi(request, product_id):
             'id': product.pk,
             'slug': product.url_slug,
             'name': product.name,
-            'price': product.get_price,
+            'price': product.price,
             'image': product.get_product_image.image.url,
             'availability': product.availability,
         }
@@ -188,8 +209,80 @@ def getProductApi(request, product_id):
     return JsonResponse(response)
 
 def wishlistPage(request):
+    categories = Categories.objects.filter(is_active=True)
 
     context = {
-        'page_title': f'Giger | Список бажаного',
+        'page_title': f'{APP_NAME} | Список бажаного',
+        'page_categories': categories,
     }
     return render(request, 'shop/wishlist.html', context=context)
+
+def cartPage(request):
+    categories = Categories.objects.filter(is_active=True)
+
+    context = {
+        'page_title': f'{APP_NAME} | Корзина',
+        'page_categories': categories,
+    }
+
+    return render(request, 'shop/cart.html', context=context)
+
+def checkOutPage(request):
+    categories = Categories.objects.filter(is_active=True)
+
+    if request.method == 'POST':
+        form = OrderForm(request.POST)
+
+        if form.is_valid():
+            try:
+                order_items = json.loads(request.POST.get('products'))
+            except ValueError:
+                return HttpResponse(status=500)
+
+            customer = Customers(
+                name    = request.POST.get('name'),
+                surname = request.POST.get('surname'),
+                address = f"{request.POST.get('city')} {request.POST.get('street')} {request.POST.get('streetNumber')}",
+                phone   = request.POST.get('phoneNubmer')
+            )
+            customer.save()
+
+            order = Orders(
+                customer_id = customer,
+                notes       = '',
+                shipping_method = request.POST.get('shipping_method'),
+            )
+            order.save()
+
+            for item in order_items:
+                product     = Products.objects.get(pk=item.get('id'))
+                item_model  = OrderItems(
+                    product_id   = product,
+                    order_id     = order,
+                    name         = product.name,
+                    buying_price = product.price,
+                    count        = item.get('count')
+                )
+                item_model.save()
+            return redirect('checkout_success')
+
+    context = {
+        'page_title': f'{APP_NAME} | Оформити замовлення',
+        'page_categories': categories,
+        'shipping_methods': (
+            ('Доставка Нова пошта', 'Замовлення відправляється через нову пошту оплата при отриманні посилки.', 'novaPoshta'),
+            ('Доставка Укр пошта', 'Замовлення відправляється через укр пошту оплата при отриманні посилки.', 'urkPoshta'),
+            ('Самовивіз', 'Отримуєте замовлення в одному з нащих магазинів.', 'selfPickUp'),
+        ),
+    }
+
+    return render(request, 'shop/checkout.html', context=context)
+
+def checkOutSuccessPage(request):
+    categories = Categories.objects.filter(is_active=True)
+
+    context = {
+        'page_title': f'{APP_NAME} | Гарного дня',
+        'page_categories': categories,
+    }
+    return render(request, 'shop/checkout_success.html', context=context)

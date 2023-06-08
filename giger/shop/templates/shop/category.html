@@ -11,7 +11,7 @@
             <div class="my-md-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
-                        <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="{% url 'home' %}">Home</a>
+                        <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="{% url 'home' %}">Головна</a>
                         </li>
                         <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page">{{ category_object.name }}</li>
                     </ol>
@@ -150,9 +150,7 @@
                                                 <div class="text-gray-100">{{ product.get_price }}</div>
                                             </div>
                                             <div class="prodcut-add-cart">
-                                                <a href="../shop/single-product-fullwidth.html"
-                                                    class="btn btn-sm btn-block btn-primary-dark btn-wide transition-3d-hover">Add
-                                                    to cart</a>
+                                                <a data-id="{{ product.pk }}" onclick="addToCart(this.dataset.id, 1)" href="{% url 'cart' %}" class="btn btn-sm btn-block btn-primary-dark btn-wide transition-3d-hover">Додати в корзину</a>
                                             </div>
                                         </div>
                                         <div
@@ -188,7 +186,7 @@
                                                 <div class="text-gray-100">{{ product.get_price }}</div>
                                             </div>
                                             <div class="d-none d-xl-block prodcut-add-cart">
-                                                <a href="../shop/single-product-fullwidth.html"
+                                                <a data-id="{{ product.pk }}" onclick="addToCart(this.dataset.id, 1)" href="{% url 'cart' %}"
                                                     class="btn-add-cart btn-primary transition-3d-hover"><i
                                                         class="ec ec-add-to-cart"></i></a>
                                             </div>
@@ -196,8 +194,8 @@
                                     </div>
                                     <div class="product-item__footer">
                                         <div class="border-top pt-2 flex-center-between flex-wrap">
-                                            <a href="{% url 'wishlist' %}" class="text-gray-6 font-size-13"><i
-                                                data-id="{{product_object.pk}}" onclick=addToWishList(this.dataset.id) class="ec ec-favorites mr-1 font-size-15"></i> Список бажаного</a>
+                                            <a data-id="{{product.pk}}" onclick=addToWishList(this.dataset.id) href="{% url 'wishlist' %}" class="text-gray-6 font-size-13"><i
+                                            class="ec ec-favorites mr-1 font-size-15"></i> Список бажаного</a>
                                         </div>
                                     </div>
                                 </div>

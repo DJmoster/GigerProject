@@ -89,7 +89,7 @@ function showItemsFromWishList() {
         tdList[2].querySelector('a').href = productUrl + obj.product.slug;
         tdList[2].querySelector('a').innerText = obj.product.name;
 
-        tdList[3].querySelector('span').innerText = obj.product.price;
+        tdList[3].querySelector('span').innerText = obj.product.price + ' грн.';
         
         if (obj.product.availability == -1) {
             tdList[4].querySelector('span').innerText = 'Під замовлення';

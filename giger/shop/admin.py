@@ -61,6 +61,11 @@ class OrderItemsInline(admin.TabularInline):
 class OrdersAdmin(admin.ModelAdmin):
     search_fields = ('customer_id__name', 'customer_id__surname', 'customer_id__phone')
 
+    list_display = ('customer_id', 'shipping_method', 'status')
+    list_display_links = ('customer_id',)
+    list_editable = ('status',)
+    list_filter = ('status', 'shipping_method')
+
     inlines = [OrderItemsInline]
 
 admin.site.register(Orders, OrdersAdmin)

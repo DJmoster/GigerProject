@@ -10,3 +10,23 @@ function onStarChosen(value) {
     }
     input.value = value;
 }
+
+function productAddToCart(product_id) {
+    product_id = parseInt(product_id);
+
+    const input = document.getElementById('productCount');
+
+    addToCart(product_id, input.value);
+}
+
+function productInputAdd() {
+    const input = document.getElementById('productCount');
+    input.value++;
+}
+
+function productInputMinus() {
+    const input = document.getElementById('productCount');
+    if(input.value > 0) {
+        input.value--;
+    }
+}

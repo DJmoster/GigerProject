@@ -1,0 +1,231 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block content %}
+<main id="content" role="main" class="checkout-page">
+    <!-- breadcrumb -->
+    <div class="bg-gray-13 bg-md-transparent">
+        <div class="container">
+            <!-- breadcrumb -->
+            <div class="my-md-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-3 flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
+                        <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1"><a href="{% url 'home' %}">Головна</a></li>
+                        <li class="breadcrumb-item flex-shrink-0 flex-xl-shrink-1 active" aria-current="page">Оформити замовлення</li>
+                    </ol>
+                </nav>
+            </div>
+            <!-- End breadcrumb -->
+        </div>
+    </div>
+    <!-- End breadcrumb -->
+
+    <div class="container">
+        <div class="mb-5">
+            <h1 class="text-center">Оформити замовлення</h1>
+        </div>
+        <form class="js-validate" action="" method="post">
+            {% csrf_token %}
+
+            <input hidden id="formProductsInput" type="text" name="products">
+            <div class="row">
+                <div class="col-lg-5 order-lg-2 mb-7 mb-lg-0">
+                    <div class="pl-lg-3 ">
+                        <div class="bg-gray-1 rounded-lg">
+                            <!-- Order Summary -->
+                            <div class="p-4 mb-4 checkout-table">
+                                <!-- Title -->
+                                <div class="border-bottom border-color-1 mb-5">
+                                    <h3 class="section-title mb-0 pb-2 font-size-25">Ваше замовлення</h3>
+                                </div>
+                                <!-- End Title -->
+
+                                <!-- Product Content -->
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th class="product-name">Товар</th>
+                                            <th class="product-total">Загалом</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <template id="checkoutElementTemplate">
+                                            <tr class="cart_item">
+                                                <td>Widescreen NX Mini F1 SMART NX</td>
+                                                <td>$685.00</td>
+                                            </tr>
+                                        </template>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <th>Вартість товарів</th>
+                                            <td id="productsPrice">$1,785.00</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Вартість доставки</th>
+                                            <td>0 грн.</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Загальна вартість</th>
+                                            <td><strong id="productsTotalPrice">$2,085.00</strong></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                <!-- End Product Content -->
+                                <div class="border-top border-width-3 border-color-1 pt-3 mb-3">
+                                    <!-- Basics Accordion -->
+                                    <div id="basicsAccordion1">
+                                        {% for shipping_method in shipping_methods %}
+                                        <!-- Card -->
+                                        <div class="border-bottom border-color-1 border-dotted-bottom">
+                                            <div class="p-3" id="{{ shipping_method.2 }}">
+                                                <div class="custom-control custom-radio">
+                                                    <input type="radio" value="{{ shipping_method.0 }}" class="custom-control-input" id="{{shipping_method.2}}for" name="shipping_method">
+                                                    <label class="custom-control-label form-label" for="{{shipping_method.2}}for"
+                                                        data-toggle="collapse"
+                                                        data-target="#{{ shipping_method.2 }}Collapse"
+                                                        aria-expanded="false"
+                                                        aria-controls="{{ shipping_method.2 }}Collapse">
+                                                        {{ shipping_method.0 }}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <div id="{{ shipping_method.2 }}Collapse" class="collapse border-top border-color-1 border-dotted-top bg-dark-lighter"
+                                                aria-labelledby="{{ shipping_method.2 }}"
+                                                data-parent="#basicsAccordion1">
+                                                <div class="p-4">
+                                                    {{ shipping_method.1 }}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- End Card -->
+                                        {% endfor %}
+                                    </div>
+                                    <!-- End Basics Accordion -->
+                                </div>
+                                <div class="form-group d-flex align-items-center justify-content-between px-3 mb-5">
+                                    <div class="form-check">
+                                        <input class="form-check-input" name="agree" type="checkbox" id="defaultCheck10" required
+                                            data-msg="Please agree terms and conditions."
+                                            data-error-class="u-has-error"
+                                            data-success-class="u-has-success">
+                                        <label class="form-check-label form-label" for="defaultCheck10">
+                                            Я погоджуюся з <a href="#" class="text-blue">політикої конфіденційності </a>
+                                            <span class="text-danger">*</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-primary-dark-w btn-block btn-pill font-size-20 mb-3 py-3">Замовити</button>
+                            </div>
+                            <!-- End Order Summary -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7 order-lg-1">
+                    <div class="pb-7 mb-7">
+                        <!-- Title -->
+                        <div class="border-bottom border-color-1 mb-5">
+                            <h3 class="section-title mb-0 pb-2 font-size-25">Деталі замовлення</h3>
+                        </div>
+                        <!-- End Title -->
+
+                        <!-- Billing Form -->
+                        <div class="row">
+                            <div class="col-md-6">
+                                <!-- Input -->
+                                <div class="js-form-message mb-6">
+                                    <label class="form-label">
+                                        Ім'я
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="name" placeholder="Jack" aria-label="Jack" required="" data-msg="Please enter your frist name." data-error-class="u-has-error" data-success-class="u-has-success" autocomplete="off">
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                            <div class="col-md-6">
+                                <!-- Input -->
+                                <div class="js-form-message mb-6">
+                                    <label class="form-label">
+                                        Прізвище
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="surname" placeholder="Wayley" aria-label="Wayley" required="" data-msg="Please enter your last name." data-error-class="u-has-error" data-success-class="u-has-success">
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                            <div class="w-100"></div>
+
+                            <div class="col-md-12">
+                                <!-- Input -->
+                                <div class="js-form-message mb-6">
+                                    <label class="form-label">
+                                        Місто
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <select name="city" class="form-control js-select selectpicker dropdown-select" required data-msg="Please select country." data-error-class="u-has-error" data-success-class="u-has-success"
+                                        data-live-search="true"
+                                        data-style="form-control border-color-1 font-weight-normal">
+                                        <option selected disabled>Обрати місто</option>
+                                        <option value="Львів">Львів</option>
+                                        <option value="Київ">Київ</option>
+                                    </select>
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                            <div class="col-md-8">
+                                <!-- Input -->
+                                <div class="js-form-message mb-6">
+                                    <label class="form-label">
+                                        Вулиця
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text" class="form-control" name="street" placeholder="470 Lucy Forks" aria-label="470 Lucy Forks" required="" data-msg="Please enter a valid address." data-error-class="u-has-error" data-success-class="u-has-success">
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                            <div class="col-md-4">
+                                <!-- Input -->
+                                <div class="js-form-message mb-6">
+                                    <label class="form-label">
+                                        Номер
+                                    </label>
+                                    <input required name="streetNumber" type="text" class="form-control" placeholder="15" aria-label="15" data-msg="Please enter a valid address." data-error-class="u-has-error" data-success-class="u-has-success">
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                            <div class="w-100"></div>
+
+                            <div class="col-md-6">
+                                <!-- Input -->
+                                <div class="js-form-message mb-6">
+                                    <label class="form-label">
+                                        Номер телефону
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input required name="phoneNubmer" max="15" type="phone" class="form-control" placeholder="+1 (062) 109-9222" aria-label="+1 (062) 109-9222" data-msg="Please enter your last name." data-error-class="u-has-error" data-success-class="u-has-success">
+                                </div>
+                                <!-- End Input -->
+                            </div>
+
+                            <div class="w-100"></div>
+                        </div>
+                        <!-- End Billing Form -->
+
+                        <!-- Accordion -->
+                        <div id="shopCartAccordion2" class="accordion rounded mb-6">
+                        </div>
+                        <!-- End Accordion -->
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <script src="{% static 'shop/js/checkout.js' %}"></script>
+</main>
+{% endblock %}

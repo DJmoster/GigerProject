@@ -103,13 +103,13 @@
                                 <div class="border rounded-pill py-1 w-md-60 height-35 px-3 border-color-1">
                                     <div class="js-quantity row align-items-center">
                                         <div class="col">
-                                            <input class="js-result form-control h-auto border-0 rounded p-0 shadow-none" type="text" value="1">
+                                            <input id="productCount" class="js-result form-control h-auto border-0 rounded p-0 shadow-none" type="text" min="1" value="1">
                                         </div>
                                         <div class="col-auto pr-1">
-                                            <a class="js-minus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0" href="javascript:;">
+                                            <a onclick=productInputMinus() class="js-minus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0">
                                                 <small class="fas fa-minus btn-icon__inner"></small>
                                             </a>
-                                            <a class="js-plus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0" href="javascript:;">
+                                            <a onclick=productInputAdd() class="js-plus btn btn-icon btn-xs btn-outline-secondary rounded-circle border-0" href="javascript:;">
                                                 <small class="fas fa-plus btn-icon__inner"></small>
                                             </a>
                                         </div>
@@ -128,7 +128,7 @@
                                 </select>
                             </div> -->
                             <div class="mb-2 pb-0dot5">
-                                <a href="#" class="btn btn-block btn-primary-dark"><i class="ec ec-add-to-cart mr-2 font-size-20"></i> Add to Cart</a>
+                                <a data-id="{{ product_object.pk }}" onclick=productAddToCart(this.dataset.id) href="{% url 'cart' %}" class="btn btn-block btn-primary-dark"><i class="ec ec-add-to-cart mr-2 font-size-20"></i> Додати в корзину</a>
                             </div>
                             <div class="mb-3">
                                 <a href="#" class="btn btn-block btn-dark">Buy Now</a>
@@ -164,18 +164,19 @@
                         <ul class="nav flex-nowrap flex-xl-wrap overflow-auto overflow-xl-visble">
                             <li class="nav-item text-gray-111 flex-shrink-0 flex-xl-shrink-1"><strong>Артикул:</strong> <span class="sku">{{ product_object.sku }}</span></li>
                             <li class="nav-item text-gray-111 mx-3 flex-shrink-0 flex-xl-shrink-1">/</li>
-                            <li class="nav-item text-gray-111 flex-shrink-0 flex-xl-shrink-1"><strong>Категорія:</strong> <a href="#" class="text-blue">{{ product_object.name }}</a></li>
+                            <li class="nav-item text-gray-111 flex-shrink-0 flex-xl-shrink-1"><strong>Категорія:</strong> <a href="{{ product_object.category_id.get_absolute_url }}" class="text-blue">{{ product_object.category_id.name }}</a></li>
                         </ul>
                     </div>
                     <div class="tab-pane fade" id="Jpills-four-example1" role="tabpanel" aria-labelledby="Jpills-four-example1-tab">
                         <div class="row mb-8">
+                            {% if product_reviews_len != 0 %}
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <h3 class="font-size-18 mb-6">Based on {{ product_object.get_reviews_count }} reviews</h3>
                                     <h2 class="font-size-30 font-weight-bold text-lh-1 mb-0">{{ product_object.get_reviews_avg }}</h2>
                                     <div class="text-lh-1">overall</div>
                                 </div>
-
+                                
                                 <!-- Ratings -->
                                 <ul class="list-unstyled">
                                     {% for count in product_object.get_reviews_division %}
@@ -230,6 +231,7 @@
                                 </ul>
                                 <!-- End Ratings -->
                             </div>
+                            {% endif %}
                             <div class="col-md-6">
                                 <h3 class="font-size-18 mb-5">Додайте відгук</h3>
                                 <!-- Form -->
@@ -332,6 +334,5 @@
         </div>
         <!-- End Single Product Tab -->
     </div>
-    <script src="{% static 'shop/js/product.js' %}"></script>
 </main>
 {% endblock %}
