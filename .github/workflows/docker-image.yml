@@ -8,7 +8,7 @@ on:
 
 jobs:
 
-  build:
+  build-docker-image:
 
     runs-on: ubuntu-latest
 
@@ -17,6 +17,10 @@ jobs:
     - name: Build the Docker image
       run: docker build --tag my-image-name:$(date +%s) ./giger
       
+  deploy-to-dockerhub:
+    runs-on: ubuntu-latest
+  
+    steps:
     - uses: actions/checkout@v3
     - name: Publish to Registry
       uses: elgohr/Publish-Docker-Github-Action@v5
