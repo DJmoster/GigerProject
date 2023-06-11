@@ -25,14 +25,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: pass environment
+    - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v0.1.10
+      needs: [deploy-to-dockerhub]
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         key: ${{ secrets.KEY }}
         port: ${{ secrets.PORT }}
-        script: |
-          docker run -p 80:8000 djii/giger_project:development
+        script: docker run -p 80:8000 djii/giger_project:development
           
