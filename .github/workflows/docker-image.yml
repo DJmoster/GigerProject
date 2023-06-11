@@ -34,7 +34,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-          cd home/github/production/GigerProject/giger
+          cd /home/github/production/GigerProject/giger
           git pull
           docker stop $(docker ps -a -q)
           docker-compose up -d
