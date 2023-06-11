@@ -26,12 +26,12 @@ jobs:
     needs: [deploy-to-dockerhub]
 
     steps:
-    - name: executing remote ssh commands using password
+    - name: Running docker compose
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.HOST }}
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
-        script: docker run -p 80:8000 djii/giger_project:development
+        script: docker-compose up -d djii/giger_project:development
           
