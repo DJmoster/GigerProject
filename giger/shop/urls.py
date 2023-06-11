@@ -13,4 +13,5 @@ urlpatterns = [
     path('checkout/success', checkOutSuccessPage, name='checkout_success'),
 
     path('api/getProduct/<int:product_id>', getProductApi),
+    path('api/getHotlineFeed', getHotlineFeedApi),
 ]

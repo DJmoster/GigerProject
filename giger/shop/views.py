@@ -1,6 +1,8 @@
+import datetime
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 
 import json
 
@@ -8,6 +10,7 @@ from shop.forms import OrderForm, ReviewForm
 from shop.models import Products, ProductImages, ProductReviews, Categories, Customers, Orders, OrderItems
 
 APP_NAME = 'Giger'
+SHOP_URL = 'http://127.0.0.1:8000'
 
 def error404Page(request, exception):
     categories = Categories.objects.filter(is_active=True)
@@ -286,3 +289,21 @@ def checkOutSuccessPage(request):
         'page_categories': categories,
     }
     return render(request, 'shop/checkout_success.html', context=context)
+
+def getHotlineFeedApi(request):
+    categories  = Categories.objects.filter(is_active=True)
+    products    = Products.objects.filter(
+        is_active=True, 
+        category_id__is_active=True
+    )
+
+    context = {
+        'page_title': f'{APP_NAME} | Hotline Feed',
+        'shop_name': APP_NAME,
+        'shop_url': SHOP_URL,
+        'now_time': datetime.datetime.now(),
+        'categories': categories,
+        'products': products,
+    }
+
+    return render(request, 'shop/hotline.xml', context=context, content_type='text/xml')

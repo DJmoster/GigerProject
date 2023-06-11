@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<price>
+    <date>{{ now_time|date:"Y-m-d H:i" }}</date>
+    <firmName>{{ shop_name }}</firmName>
+    <firmId>1234</firmId>
+
+    <categories>
+        {% for category in categories %}
+        <category>
+            <id>{{ category.pk }}</id>
+            <name>{{ category.name }}</name>
+        </category>
+        {% endfor %}
+    </categories>
+
+    <items>
+        {% for product in products %}
+        <item>
+            <id>{{ product.pk }}</id>
+            <categoryId>{{ product.category_id.pk }}</categoryId>
+            <vendor>{{ product.vendor_id.name }}</vendor>
+            <name>{{ product.name }}</name>
+            <url>{{ shop_url }}{{ product.get_absolute_url }}</url>
+            <priceRUAH>{{ product.price }}</priceRUAH>
+
+            {% if product.availability == -1 %}
+                <stock>Під замовлення</stock>
+            {% elif product.availability == 0 %}
+                <stock>Немає</stock>
+            {% else %}
+                <stock>В наявності</stock>
+            {% endif %}
+        </item>
+        {% endfor %}
+    </items>
+</price>
