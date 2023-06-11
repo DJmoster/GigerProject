@@ -34,7 +34,7 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         script: |
-        cd /production/GigerProject/giger
-        git pull
-        docker-compose up -d
+          cd /production/GigerProject/giger
+          git pull
+          docker-compose up -d
           
