@@ -1,10 +1,19 @@
 version: "3.6"
 services:
-  python:
-    restart: always
+  web:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+  web_migrate:
+    extends:
+      service: web
+    command: python manage.py migrate
+  web_run:
+    extends:
+      service: web
+    restart: always
     expose:
       - 80
     ports:
