@@ -8,15 +8,6 @@ on:
 
 jobs:
 
-  build-docker-image:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    - name: Build the Docker image
-      run: docker-compose up -d --tag my-image-name:$(date +%s) ./giger
-      
   deploy-to-dockerhub:
     runs-on: ubuntu-latest
   
@@ -34,8 +25,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: pass environment
+    - uses: actions/checkout@v2
+    - name: pass environment
       uses: appleboy/ssh-action@v0.1.10
       with:
         host: ${{ secrets.HOST }}
