@@ -15,3 +15,6 @@ urlpatterns = [
     path('api/getProduct/<int:product_id>', getProductApi),
     path('api/getHotlineFeed', getHotlineFeedApi),
 ]
+
+handler404 = "shop.views.error404Page"
+handler400 = "shop.views.error404Page"

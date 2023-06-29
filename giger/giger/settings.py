@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'admin_reorder',
     'shop',
+    'django_cleanup.apps.CleanupConfig',
 ]
 
 MIDDLEWARE = [
