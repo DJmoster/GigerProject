@@ -20,6 +20,8 @@ jobs:
         port: ${{ secrets.PORT }}
         script: |
           cd /home/github/production/GigerProject/giger
+          git add .
+          git stash
           git pull
           docker stop $(docker ps -a -q)
           docker-compose up --force-recreate -d
