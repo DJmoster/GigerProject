@@ -27,7 +27,9 @@ services:
       - gunicorn_run
     ports:
       - 80:80
+      - 443:443
     volumes:
       - ./static:/var/www/html/static
       - ./media:/var/www/html/media
       - ../nginx-conf.d:/etc/nginx/conf.d
+      - /etc/letsencrypt/:/etc/letsencrypt/
