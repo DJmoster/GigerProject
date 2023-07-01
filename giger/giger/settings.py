@@ -32,7 +32,9 @@ SECRET_KEY = env('SECRET_KEY')
 DEBUG = env('DEBUG')
 
 ALLOWED_HOSTS = ['*']
+
 CSRF_TRUSTED_ORIGINS = ['https://dji1.vps.webdock.cloud/']
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO','https')
 
 # Application definition
 
