@@ -1,3 +1,4 @@
+let cartProductsData = []
 
 function addToCart(product_id, count) {
     product_id = parseInt(product_id);
@@ -28,6 +29,11 @@ function setCartCount(product_id, count) {
     product_id = parseInt(product_id);
     count      = parseInt(count);
 
+    if(count < 1) {
+        removeFromCart(product_id);
+        return;
+    }
+
     let list = JSON.parse(localStorage.getItem('cart'));
 
     if (list != null || Array.isArray(list)) {
@@ -41,7 +47,13 @@ function setCartCount(product_id, count) {
     }
 
     if (document.getElementById('cartTable') != null) {
-        location.reload();
+        cartProductsData.forEach(obj => {
+            if(obj.product.id == product_id) {
+                obj.product.count = count;
+            }
+        });
+
+        updateCartItems();
     }
 }
 
@@ -61,13 +73,23 @@ function removeFromCart(product_id) {
     }
 
     if (document.getElementById('cartTable') != null) {
-        location.reload();
+        cartProductsData.forEach(obj => {
+            if(obj.product.id == product_id) {
+                cartProductsData.splice(cartProductsData.indexOf(obj), 1);
+            }
+        });
+
+        updateCartItems();
     }
 }
 
 function cartTableItemSet(item_id, product_id) {
     const element = document.getElementById(item_id);
     const input   = element.querySelector('td:nth-child(5) > div > div > div.col > input');
+
+    if(parseInt(input.value) < 1) {
+        input.value = 1;
+    }
 
     setCartCount(product_id, input.value);
 }
@@ -77,6 +99,10 @@ function cartTableItemMinus(item_id, product_id) {
     const input   = element.querySelector('td:nth-child(5) > div > div > div.col > input');
 
     input.value--;
+
+    if(parseInt(input.value) < 1) {
+        input.value = 1;
+    }
     setCartCount(product_id, input.value);
 }
 
@@ -100,60 +126,33 @@ function noItemsInCart() {
     total.style.display = 'none';
 }
 
-function calculateCartTotal(productsData) {
+function calculateCartTotal() {
     const totalElement = document.getElementById('cartTotalSpan');
     let totalPrice = 0;
 
-    productsData.forEach(obj => {
+    cartProductsData.forEach(obj => {
         totalPrice += Math.round((obj.product.price * obj.product.count) * 100) / 100;
     })
 
     totalElement.innerText = totalPrice + ' грн.';
 }
 
-
-function showItemsFromCart() {
-    const apiUrl     = '/api/getProduct/';
+function updateCartItems() {
     const productUrl = '/product/';
-
-    let list = JSON.parse(localStorage.getItem('cart'));
-
-    if (list == null || !Array.isArray(list) || list == []) {
-        noItemsInCart();
-        return;
-    }
-
-    list.reverse()
-    let productsData = []
-
-    list.forEach(item => {
-        const xmlHttp = new XMLHttpRequest();
-
-        xmlHttp.open('GET', apiUrl + item.id, false);
-        xmlHttp.send();
-
-        if (xmlHttp.status == 200) {
-            let responce = JSON.parse(xmlHttp.responseText);
-            responce.product.count = item.count;
-
-            productsData.push(responce);
-
-        } else {
-            removeFromCart(item.id);
-        }
-    })
 
     const template  = document.querySelector('#cartElementTemplate');
     const bTemplate = document.querySelector('#cartButtonTable');
 
     const tbody     = document.querySelector("tbody");
 
-    if (productsData.length == 0) {
+    tbody.innerHTML = '';
+
+    if (cartProductsData.length == 0) {
         noItemsInCart();
         return;
     }
 
-    productsData.forEach(obj => {
+    cartProductsData.forEach(obj => {
         const clone     = template.content.cloneNode(true);
         const tdList    = clone.querySelectorAll('td');
         const table_id  = 'product_table_' + obj.product.id
@@ -182,7 +181,39 @@ function showItemsFromCart() {
     })
     tbody.appendChild(bTemplate.content.cloneNode(true));
 
-    calculateCartTotal(productsData);
+    calculateCartTotal();
+}
+
+
+function showItemsFromCart() {
+    const apiUrl     = '/api/getProduct/';
+
+    let list = JSON.parse(localStorage.getItem('cart'));
+
+    if (list == null || !Array.isArray(list) || list == []) {
+        noItemsInCart();
+        return;
+    }
+
+    list.reverse()
+    list.forEach(item => {
+        const xmlHttp = new XMLHttpRequest();
+
+        xmlHttp.open('GET', apiUrl + item.id, false);
+        xmlHttp.send();
+
+        if (xmlHttp.status == 200) {
+            let responce = JSON.parse(xmlHttp.responseText);
+            responce.product.count = item.count;
+
+            cartProductsData.push(responce);
+
+        } else {
+            removeFromCart(item.id);
+        }
+    })
+
+    updateCartItems()
 }
 
 function headerShowCartCount() {

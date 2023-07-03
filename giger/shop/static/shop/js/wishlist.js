@@ -1,4 +1,4 @@
-
+let productsData = []
 
 function addToWishList(product_id) {
     product_id = parseInt(product_id);
@@ -16,25 +16,6 @@ function addToWishList(product_id) {
     }
 }
 
-function removeFromWishList(product_id) {
-    product_id = parseInt(product_id);
-
-    let list = JSON.parse(localStorage.getItem('wishlist'));
-
-    if (list != null || Array.isArray(list)) {
-        const index = list.indexOf(product_id);
-
-        if (index !== -1) {
-            list.splice(index, 1);
-        }
-        localStorage.setItem('wishlist', JSON.stringify(list));
-    }
-
-    if (document.getElementById('wishlistTable') != null) {
-        location.reload();
-    }
-}
-
 function noItemsInWishList() {
     const text  = document.getElementById('wishlistTitle');
     const table = document.getElementById('wishlistTable');
@@ -43,34 +24,13 @@ function noItemsInWishList() {
     table.style.display = 'none';
 }
 
-function showItemsFromWishList() {
-    const apiUrl     = '/api/getProduct/';
+function updateItemsInWishList() {
     const productUrl = '/product/';
-
-    let list = JSON.parse(localStorage.getItem('wishlist'));
-
-    if (list == null || !Array.isArray(list) || list == []) {
-        noItemsInWishList();
-        return;
-    }
-
-    let productsData = []
-
-    list.forEach(item => {
-        const xmlHttp = new XMLHttpRequest();
-
-        xmlHttp.open('GET', apiUrl + item, false );
-        xmlHttp.send();
-
-        if (xmlHttp.status == 200) {
-            productsData.push(JSON.parse(xmlHttp.responseText));
-        } else {
-            removeFromWishList(item);
-        }
-    })
 
     const template  = document.querySelector('#wishListElementTemplate');
     const tbody     = document.querySelector("tbody");
+
+    tbody.innerHTML = '';
 
     if (productsData.length == 0) {
         noItemsInWishList();
@@ -101,8 +61,60 @@ function showItemsFromWishList() {
             tdList[4].querySelector('span').innerText = 'Немає в наявності';
         }
 
+        tdList[5].querySelector('a').addEventListener('click', () => addToCart(obj.product.id, 1))
+
         tbody.appendChild(clone);
     })
+}
+
+function removeFromWishList(product_id) {
+    product_id = parseInt(product_id);
+
+    let list = JSON.parse(localStorage.getItem('wishlist'));
+
+    if (list != null || Array.isArray(list)) {
+        const index = list.indexOf(product_id);
+
+        if (index !== -1) {
+            list.splice(index, 1);
+        }
+        localStorage.setItem('wishlist', JSON.stringify(list));
+    }
+
+    if (document.getElementById('wishlistTable') != null) {
+        productsData.forEach(obj => {
+            if(obj.product.id == product_id) {
+                productsData.splice(productsData.indexOf(obj), 1);
+            }
+        });
+        updateItemsInWishList();
+    }
+}
+
+function showItemsFromWishList() {
+    const apiUrl     = '/api/getProduct/';
+
+    let list = JSON.parse(localStorage.getItem('wishlist'));
+
+    if (list == null || !Array.isArray(list) || list == []) {
+        noItemsInWishList();
+        return;
+    }
+
+    list.forEach(item => {
+        const xmlHttp = new XMLHttpRequest();
+
+        xmlHttp.open('GET', apiUrl + item, false );
+        xmlHttp.send();
+
+        if (xmlHttp.status == 200) {
+            productsData.push(JSON.parse(xmlHttp.responseText));
+        } else {
+            removeFromWishList(item);
+        }
+    })
+
+    updateItemsInWishList();
 }
 
 if (document.getElementById('wishlistTable') != null) {
